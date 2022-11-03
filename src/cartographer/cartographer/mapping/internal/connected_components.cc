@@ -39,7 +39,7 @@ void ConnectedComponents::Connect(const int trajectory_id_a,
                                   const int trajectory_id_b) {
   absl::MutexLock locker(&lock_);
   Union(trajectory_id_a, trajectory_id_b);
-  auto sorted_pair = std::minmax(trajectory_id_a, trajectory_id_b);
+  auto sorted_pair = std::minmax(trajectory_id_a, trajectory_id_b); // 返回最小值和最大值
   ++connection_map_[sorted_pair];
 }
 

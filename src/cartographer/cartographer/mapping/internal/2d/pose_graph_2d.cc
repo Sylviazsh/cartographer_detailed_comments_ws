@@ -649,6 +649,8 @@ void PoseGraph2D::HandleWorkQueue(
       }
     }
     // 将优化后最后一个节点的submap id 与 节点id 传入回调函数进行处理
+    // 在map_builder_server.cc通过PoseGraph2D::SetGlobalSlamOptimizationCallback设置回调为MapBuilderServer::OnGlobalSlamOptimizations
+    //? 但是MapBuilderServer::OnGlobalSlamOptimizations什么也没干
     global_slam_optimization_callback_(
         trajectory_id_to_last_optimized_submap_id,
         trajectory_id_to_last_optimized_node_id);
@@ -672,6 +674,7 @@ void PoseGraph2D::HandleWorkQueue(
     // 如果裁剪器处于完成状态, 就把裁剪器删除掉
     trimmers_.erase(
         // c++11: std::remove_if 如果回调函数函数返回真,则将当前所指向的参数移到尾部,返回值是被移动区域的首个元素
+        // 遍历trimmers_，如果trimmer IsFinished，则删去
         std::remove_if(trimmers_.begin(), trimmers_.end(),
                        [](std::unique_ptr<PoseGraphTrimmer>& trimmer) {
                          return trimmer->IsFinished(); // 调用PureLocalizationTrimmer::IsFinished()
@@ -1097,6 +1100,7 @@ void PoseGraph2D::RunOptimization() {
   // before Solve to avoid blocking foreground processing.
   // Solve 比较耗时, 所以在执行 Solve 之前不要加互斥锁, 以免阻塞其他的任务处理
   // landmark直接参与优化问题
+  // Solve添加5种残差并求解
   optimization_problem_->Solve(data_.constraints, GetTrajectoryStates(),
                                data_.landmark_nodes);
 
@@ -1129,7 +1133,7 @@ void PoseGraph2D::RunOptimization() {
     // 'optimization_problem_' yet.
     // 推断尚未包含在“optimization_problem_”中的所有点云姿势
 
-    // 根据submap_data最后一个被优化的位姿, 计算global坐标系指向local坐标系的坐标变换
+    // 根据submap_data最后一个被优化的位姿, 计算优化后 global坐标系指向local坐标系的坐标变换
     const auto local_to_new_global =
         ComputeLocalToGlobalTransform(submap_data, trajectory_id);
     // 优化前的 global坐标系指向local坐标系的坐标变换
@@ -1416,6 +1420,7 @@ transform::Rigid3d PoseGraph2D::ComputeLocalToGlobalTransform(
   // Accessing 'local_pose' in Submap is okay, since the member is const.
   // 通过最后一个优化后的 global_pose * local_pose().inverse() 获取 global_pose->local_pose的坐标变换
   // tag: 画图说明一下
+  // global_frame/local_frame
   return transform::Embed3D(
              global_submap_poses.at(last_optimized_submap_id).global_pose) *
          data_.submap_data.at(last_optimized_submap_id)
@@ -1534,7 +1539,7 @@ void PoseGraph2D::TrimmingHandle::TrimSubmap(const SubmapId& submap_id) {
 
   // Remove all 'data_.constraints' related to 'submap_id'.
   {
-    // Step: 1 删除submap_id相关的约束
+    // Step: 1 删除submap_id相关的约束  //? 约束到底是什么
     std::vector<Constraint> constraints;
     for (const Constraint& constraint : parent_->data_.constraints) {
       if (constraint.submap_id != submap_id) {

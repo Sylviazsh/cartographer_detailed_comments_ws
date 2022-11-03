@@ -31,7 +31,7 @@ namespace mapping {
 namespace optimization {
 namespace {
 
-class SpaCostFunction2D {
+class SpaCostFunction2D { // 仿函数CostFunctor的本质为结构体struct或者类class，由于重载了()运算符，使得其能够具有和函数一样的调用行为，因此被称为仿函数
  public:
   explicit SpaCostFunction2D(
       const PoseGraphInterface::Constraint::Pose& observed_relative_pose)
@@ -142,8 +142,8 @@ class AnalyticalSpaCostFunction2D
 ceres::CostFunction* CreateAutoDiffSpaCostFunction(
     const PoseGraphInterface::Constraint::Pose& observed_relative_pose) {
   return new ceres::AutoDiffCostFunction<SpaCostFunction2D, 3 /* residuals */,
-                                         3 /* start pose variables */,
-                                         3 /* end pose variables */>(
+                                         3 /* start pose variables. Number of parameters in block 0*/,
+                                         3 /* end pose variables. Number of parameters in block 1*/>(
       new SpaCostFunction2D(observed_relative_pose));
 }
 

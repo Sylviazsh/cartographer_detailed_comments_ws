@@ -49,7 +49,7 @@ void TrajectoryConnectivityState::Connect(const int trajectory_id_a,
     // 获取所有与轨迹a连接的轨迹id
     std::vector<int> component_a =
         connected_components_.GetComponent(trajectory_id_a);
-    // 获取所有与轨迹a连接的轨迹id
+    // 获取所有与轨迹b连接的轨迹id
     std::vector<int> component_b =
         connected_components_.GetComponent(trajectory_id_b);
     // 为所有的a与b间的连接组合设置时间

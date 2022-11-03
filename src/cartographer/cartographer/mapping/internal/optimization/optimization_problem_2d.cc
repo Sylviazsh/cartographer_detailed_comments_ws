@@ -271,7 +271,12 @@ void OptimizationProblem2D::SetMaxNumIterations(
 
 /**
  * @brief 搭建优化问题并进行求解
- * 
+ * 添加5个残差：(计算残差时都需要根据时间插值)
+ * 1. 节点与子图原点在global坐标系下的相对位姿 与 约束 的差值
+ * 2. landmark数据与节点位姿间的相对坐标变换 与 landmark观测 的差值
+ * 3. 节点与节点间在global坐标系下的相对坐标变换 与 通过里程计数据插值出的相对坐标变换 的差值
+ * 4. 节点与节点间在global坐标系下的相对坐标变换 与 相邻2个节点在local坐标系下的相对坐标变换 的差值
+ * 5. 节点与gps坐标系原点在global坐标系下的相对坐标变换 与 通过gps数据进行插值得到的相对坐标变换 的差值
  * @param[in] constraints 所有的约束数据
  * @param[in] trajectories_state 轨迹的状态
  * @param[in] landmark_nodes landmark数据
@@ -316,6 +321,7 @@ void OptimizationProblem2D::Solve(
                      FromPose(submap_id_data.data.global_pose));
     // c++11: std::array::data() 返回指向数组对象中第一个元素的指针
     // Step: 添加需要优化的数据 这里显式添加参数块,会进行额外的参数块正确性检查
+    // [ceres参考: https://blog.csdn.net/weixin_43991178/article/details/100532618]
     problem.AddParameterBlock(C_submaps.at(submap_id_data.id).data(), 3);
 
     if (first_submap || frozen) {
@@ -348,9 +354,9 @@ void OptimizationProblem2D::Solve(
         CreateAutoDiffSpaCostFunction(constraint.pose),
         // Loop closure constraints should have a loss function.
         // 为闭环约束提供一个Huber的核函数,用于降低错误的闭环检测对最终的优化结果带来的负面影响
-        constraint.tag == Constraint::INTER_SUBMAP // 核函数
+        constraint.tag == Constraint::INTER_SUBMAP
             ? new ceres::HuberLoss(options_.huber_scale()) // param: huber_scale
-            : nullptr,
+            : nullptr, // 核函数为空，即为单位函数，即不对离群值做处理
         C_submaps.at(constraint.submap_id).data(), // 2个优化变量
         C_nodes.at(constraint.node_id).data());
   }

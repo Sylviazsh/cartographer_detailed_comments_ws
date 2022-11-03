@@ -28,8 +28,10 @@ namespace mapping {
 constexpr float RangeDataCollator::kDefaultIntensityValue;
 
 /**
- * @brief 多个雷达数据的时间同步
- * 
+ * @brief 多个雷达数据的时间同步 //? 不是统一的时间戳吗？为什么需要时间同步 [参考:https://zhuanlan.zhihu.com/p/415303501]
+ * 对每个新来的数据都是删去current start之前的，待用current end之后的，使用两者之间的。那么在多雷达情况下，每段时间，实际都只保留了某一个数据源的数据
+ * 多雷达主要是考虑覆盖范围，不是装在顶部的话一个雷达没法覆盖360度
+ * 雷达很贵，尽量少装
  * @param[in] sensor_id 雷达数据的话题
  * @param[in] timed_point_cloud_data 雷达数据
  * @return sensor::TimedPointCloudOriginData 根据时间处理之后的数据
@@ -84,7 +86,7 @@ sensor::TimedPointCloudOriginData RangeDataCollator::AddRangeData(
 sensor::TimedPointCloudOriginData RangeDataCollator::CropAndMerge() {
   sensor::TimedPointCloudOriginData result{current_end_, {}, {}};
   bool warned_for_dropped_points = false;
-  // 遍历所有的传感器话题
+  // 遍历所有的传感器话题 // 待处理的点云数据
   for (auto it = id_to_pending_data_.begin();
        it != id_to_pending_data_.end();) {
     // 获取数据的引用
@@ -108,7 +110,7 @@ sensor::TimedPointCloudOriginData RangeDataCollator::CropAndMerge() {
       ++overlap_end;
     }
 
-    // 丢弃点云中时间比起始时间早的点, 每执行一下CropAndMerge()打印一次log
+    // 丢弃点云中时间比起始时间早的点, 每执行一下CropAndMerge()打印一次log // 多传感器在一个时间段只保留一个数据源的数据
     if (ranges.begin() < overlap_begin && !warned_for_dropped_points) {
       LOG(WARNING) << "Dropped " << std::distance(ranges.begin(), overlap_begin)
                    << " earlier points.";
@@ -139,7 +141,7 @@ sensor::TimedPointCloudOriginData RangeDataCollator::CropAndMerge() {
         // current_end_ + point_time[3]_after == in_timestamp +
         // point_time[3]_before
         // 针对每个点时间戳进行修正, 让最后一个点的时间为0
-        point.point_time.time += time_correction;  
+        point.point_time.time += time_correction;
         result.ranges.push_back(point);
       } // end for
     } // end if
@@ -166,7 +168,7 @@ sensor::TimedPointCloudOriginData RangeDataCollator::CropAndMerge() {
     }
   } // end for
 
-  // 对各传感器的点云 按照每个点的时间从小到大进行排序
+  // 对各传感器的点云 按照每个点的时间从小到大进行排序 // 多个laser scan
   std::sort(result.ranges.begin(), result.ranges.end(),
             [](const sensor::TimedPointCloudOriginData::RangeMeasurement& a,
                const sensor::TimedPointCloudOriginData::RangeMeasurement& b) {

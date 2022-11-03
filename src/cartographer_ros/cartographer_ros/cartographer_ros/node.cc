@@ -875,6 +875,7 @@ bool Node::HandleStartTrajectory(
         ::cartographer_ros::FromRos(ros::Time(0))));
 
     // 将初始位姿信息加入到trajectory_options中
+    //? 然后会在哪里用到呢？在MapBuilder::AddTrajectoryBuilder通过trajectory_options.initial_trajectory_pose()得到的是吗
     *trajectory_options.trajectory_builder_options
          .mutable_initial_trajectory_pose() = initial_trajectory_pose;
   }

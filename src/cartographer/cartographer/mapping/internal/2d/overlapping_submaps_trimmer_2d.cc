@@ -185,6 +185,7 @@ std::vector<SubmapId> FindSubmapIdsToTrim(
 
 void OverlappingSubmapsTrimmer2D::Trim(Trimmable* pose_graph) {
   const auto submap_data = pose_graph->GetOptimizedSubmapData();
+  // 当前子图数小于最低子图数，则不用裁减直接返回
   if (submap_data.size() - current_submap_count_ <= min_added_submaps_count_) {
     return;
   }
