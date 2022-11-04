@@ -516,7 +516,7 @@ Candidate2D FastCorrelativeScanMatcher2D::BranchAndBound(
   for (const Candidate2D& candidate : candidates) {
     //  Step: 剪枝 低于设置的阈值 或者 低于上一层的可行解的最高分 的可行解不进行继续分枝
     // 如果遇到一个候选点的分低于阈值, 那么后边的候选解的得分也会低于阈值,就可以直接跳出循环了
-    if (candidate.score <= min_score) {
+    if (candidate.score <= min_score) { // score是从大到小排序的
       break;
     }
 

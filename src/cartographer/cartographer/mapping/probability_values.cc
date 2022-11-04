@@ -100,7 +100,7 @@ std::vector<uint16> ComputeLookupTableToApplyOdds(const float odds) {
 std::vector<uint16> ComputeLookupTableToApplyCorrespondenceCostOdds(
     float odds) {
   std::vector<uint16> result;
-  result.reserve(kValueCount); // 32768
+  result.reserve(kValueCount); // 32768 = 2^15
 
   // 当前cell是unknown情况下直接把odds转成value存进来
   result.push_back(CorrespondenceCostToValue(ProbabilityToCorrespondenceCost(

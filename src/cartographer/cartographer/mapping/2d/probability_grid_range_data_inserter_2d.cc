@@ -137,7 +137,7 @@ ProbabilityGridRangeDataInserter2D::ProbabilityGridRangeDataInserter2D(
     const proto::ProbabilityGridRangeDataInserterOptions2D& options)
     : options_(options),
       // 生成更新占用栅格时的查找表 // param: hit_probability
-      hit_table_(ComputeLookupTableToApplyCorrespondenceCostOdds(
+      hit_table_(ComputeLookupTableToApplyCorrespondenceCostOdds( // 以空间换时间，后面就不用计算，直接查表即可
           Odds(options.hit_probability()))),    // 0.55
       // 生成更新空闲栅格时的查找表 // param: miss_probability
       miss_table_(ComputeLookupTableToApplyCorrespondenceCostOdds(

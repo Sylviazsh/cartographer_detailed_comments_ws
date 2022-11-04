@@ -83,7 +83,7 @@ bool ProbabilityGrid::ApplyLookupTable(const Eigen::Array2i& cell_index,
   // 标记这个索引的栅格已经被更新过
   mutable_update_indices()->push_back(flat_index);
   // 更新栅格值
-  *cell = table[*cell];
+  *cell = table[*cell]; // 测试hit table [src/cartographer/test/test_hit_table.cpp]
   DCHECK_GE(*cell, kUpdateMarker);
   // 更新bounding_box
   mutable_known_cells_box()->extend(cell_index.matrix());
