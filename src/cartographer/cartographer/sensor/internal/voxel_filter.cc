@@ -124,7 +124,7 @@ std::vector<bool> RandomizedVoxelFilterIndices(
       // 生成随机数的范围是 [1, voxel.first]
       std::uniform_int_distribution<> distribution(1, voxel.first);
       // 生成的随机数与个数相等, 就让这个点代表这个体素格子
-      if (distribution(generator) == voxel.first) { // 为了让总的来说 每个点取到的概率是均匀分布的 [src/cartographer/docs/voxel_uniform_index.jpg]
+      if (distribution(generator) == voxel.first) { // 为了让总的来说 每个点取到的概率是均匀分布的 [参考:src/cartographer/docs/voxel_uniform_index.jpg]
         voxel.second = i;
       }
     }

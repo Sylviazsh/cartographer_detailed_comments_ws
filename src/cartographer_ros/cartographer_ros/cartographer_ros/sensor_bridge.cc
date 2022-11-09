@@ -216,7 +216,7 @@ void SensorBridge::HandlePointCloud2Message(
 
 const TfBridge& SensorBridge::tf_bridge() const { return tf_bridge_; }
 
-// 根据参数配置,将一帧雷达数据分成几段, 再传入trajectory_builder_
+// 根据参数配置,将一帧雷达数据分成几段, 再传入trajectory_builder_ //? 为什么要分成几段
 void SensorBridge::HandleLaserScan(
     const std::string& sensor_id, const carto::common::Time time,
     const std::string& frame_id,

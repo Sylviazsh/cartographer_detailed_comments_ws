@@ -1149,7 +1149,7 @@ void Node::HandleLandmarkMessage(
     const int trajectory_id, const std::string& sensor_id,
     const cartographer_ros_msgs::LandmarkList::ConstPtr& msg) {
   absl::MutexLock lock(&mutex_);
-  if (!sensor_samplers_.at(trajectory_id).landmark_sampler.Pulse()) {
+  if (!sensor_samplers_.at(trajectory_id).landmark_sampler.Pulse()) { // 降采样，每隔ratio个跳过一个，设置成1，不跳过
     return;
   }
   map_builder_bridge_.sensor_bridge(trajectory_id)

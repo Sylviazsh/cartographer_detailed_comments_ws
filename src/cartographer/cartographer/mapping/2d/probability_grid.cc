@@ -166,7 +166,7 @@ bool ProbabilityGrid::DrawToSubmapTexture(
         128 - ProbabilityToLogOddsInteger(GetProbability(xy_index + offset));
     const uint8 alpha = delta > 0 ? 0 : -delta;
     const uint8 value = delta > 0 ? delta : 0;
-    // 存数据时存了2个值, 一个是栅格值value, 另一个是alpha透明度
+    // 存数据时存了2个值, 一个是栅格值value, 另一个是alpha透明度 //? 存透明度干嘛？
     cells.push_back(value);
     cells.push_back((value || alpha) ? alpha : 1);
   }
