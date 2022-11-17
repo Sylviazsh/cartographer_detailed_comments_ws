@@ -115,6 +115,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC cartographer)
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${LUA_INCLUDE_DIR})
 
 # PCL
+set(PCL_INCLUDE_DIRS /usr/include/pcl-1.8 )
 target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC ${PCL_INCLUDE_DIRS})
 target_link_libraries(${PROJECT_NAME} PUBLIC ${PCL_LIBRARIES})
 
