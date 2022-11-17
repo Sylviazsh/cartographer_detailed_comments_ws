@@ -30,6 +30,9 @@ vscode中推荐的插件有:
 
 其中的bag文件可以在我的公众号: 从零开始搭SLAM  里找到，在底部菜单栏的数据集链接里
 
+### 2d demo
+`roslaunch cartographer_ros demo_backpack_2d.launch bag_filename:=${HOME}/Downloads/cartographer_paper_deutsches_museum.bag`
+
 ### 2d建图指令
 `roslaunch cartographer_ros lx_rs16_2d_outdoor.launch`
 
