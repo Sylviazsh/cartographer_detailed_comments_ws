@@ -32,6 +32,7 @@ vscode中推荐的插件有:
 
 ### 编译
 `catkin_make_isolated --install --use-ninja`
+
 `source install_isolated/setup.zsh`
 
 ### 2d demo
